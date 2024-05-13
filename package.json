@@ -1,8 +1,9 @@
 {
-  "name": "new-page-template",
-  "displayName": "New Page Template",
-  "description": "",
+  "name": "omni-bo-extension",
+  "displayName": "Omni BO Vscode插件",
+  "description": "Omni BO 插件, 快速创建页面模版",
   "version": "0.0.1",
+  "icon": "logo.png",
   "engines": {
     "vscode": "^1.89.0"
   },
@@ -22,8 +23,7 @@
       "explorer/context": [
         {
           "when": "explorerResourceIsFolder",
-          "command": "createTemplate.create",
-          "group": "1_modification"
+          "command": "createTemplate.create"
         }
       ]
     }
