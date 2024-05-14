@@ -8,16 +8,27 @@ import { useState } from 'react'
 export enum StatusEnum {
   Success = 'SUCCESS',
   Failed = 'FAILED',
-  Pending = 'PENDING',
+  Pending = 'PENDING'
 }
 
 export const statusOptions = [
   { value: StatusEnum.Success, label: 'Success', status: 'Success' }, // status: 'Success' | 'Error' | 'Processing' | 'Warning' | 'Default';
   { value: StatusEnum.Failed, label: 'Failed', status: 'Error' },
-  { value: StatusEnum.Pending, label: 'Pending', status: 'Processing' },
+  { value: StatusEnum.Pending, label: 'Pending', status: 'Processing' }
 ]
 
-export function useColumns({ handleDetailModal, handleEditModal, handleDelete, handleSubmit }) {
+export function useColumns({
+  /* start_detail */
+  handleDetailModal,
+  /* end_detail */
+  /* start_edit */
+  handleEditModal,
+  /* end_edit */
+  /* start_delete */
+  handleDelete,
+  /* end_delete */
+  handleSubmit
+}) {
   const [accountInfo, setAccountInfo] = useState()
 
   const formColumns: OfficeProColumns[] = [
@@ -28,13 +39,13 @@ export function useColumns({ handleDetailModal, handleEditModal, handleDelete, h
       fieldProps: {
         onChange(val, option) {
           setAccountInfo(option)
-        },
-      },
+        }
+      }
     },
     {
       title: 'Account Type',
       dataIndex: 'accountType',
-      renderFormItem: () => <OfficeAccountTypeSelect accountInfo={accountInfo} />,
+      renderFormItem: () => <OfficeAccountTypeSelect accountInfo={accountInfo} />
     },
     {
       title: 'Status',
@@ -45,17 +56,17 @@ export function useColumns({ handleDetailModal, handleEditModal, handleDelete, h
           if (value) {
             return { statusList: value === StatusEnum.Pending ? [StatusEnum.Pending] : [value] }
           }
-        },
-      },
+        }
+      }
     },
     {
       title: 'Apply Date',
       dataIndex: 'applyDate',
       valueType: 'dateRange',
       search: {
-        transform: (value: [string, string]) => ({ startEntryDate: value[0], endEntryDate: value[1] }),
-      },
-    },
+        transform: (value: [string, string]) => ({ startEntryDate: value[0], endEntryDate: value[1] })
+      }
+    }
   ]
 
   const tableColumns: OfficeProColumns[] = [
@@ -63,34 +74,34 @@ export function useColumns({ handleDetailModal, handleEditModal, handleDelete, h
       title: 'Account No.',
       dataIndex: 'fromAccountNumber',
       fixed: 'left',
-      ...ColumnRender.RenderAccountNo,
+      ...ColumnRender.RenderAccountNo
     },
     {
       title: 'Status',
       dataIndex: 'status',
-      valueEnum: statusOptions,
+      valueEnum: statusOptions
     },
     { title: 'Expiration Date', dataIndex: 'expirationDate', ...ColumnRender.RenderDayTime },
     {
       title: 'Amount',
       dataIndex: 'amount',
-      ...ColumnRender.RenderMoney,
+      ...ColumnRender.RenderMoney
     },
     {
       title: 'Request Contracts',
       dataIndex: 'quantity',
       sorter: true,
-      ...ColumnRender.RenderNum,
+      ...ColumnRender.RenderNum
     },
     {
       title: 'Create Time',
       dataIndex: 'createTime',
-      ...ColumnRender.RenderTZTime,
+      ...ColumnRender.RenderTZTime
     },
     {
       title: 'Update Time',
       dataIndex: 'updateTime',
-      ...ColumnRender.RenderTZTime,
+      ...ColumnRender.RenderTZTime
     },
     {
       title: 'Action',
@@ -98,32 +109,38 @@ export function useColumns({ handleDetailModal, handleEditModal, handleDelete, h
       render: (_, row) => (
         <OfficeAction
           dataSource={[
+            /* start_edit */
             {
               url: '', // TODO set permission url
               name: 'Edit',
-              onClick: () => handleEditModal(row),
+              onClick: () => handleEditModal(row)
             },
+            /* end_edit */
+            /* start_detail */
             {
               url: '', // TODO set permission url
               name: 'Detail',
-              onClick: () => handleDetailModal(row),
+              onClick: () => handleDetailModal(row)
             },
+            /* end_detail */
             {
               url: '', // TODO set permission url
               name: 'Submit',
               onClick: () => handleSubmit(row),
-              showConfirm: true,
+              showConfirm: true
             },
+            /* start_delete */
             {
               url: '', // TODO set permission url
               name: 'Delete',
               danger: true,
-              onClick: () => handleDelete(row),
-            },
+              onClick: () => handleDelete(row)
+            }
+            /* end_delete */
           ]}
         />
-      ),
-    },
+      )
+    }
   ]
 
   return [formColumns, tableColumns]

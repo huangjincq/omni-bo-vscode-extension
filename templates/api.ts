@@ -30,31 +30,37 @@ export default {
     // }
     return request('/api/pt/bo/cash2Margin/assetTransfer/page', {
       method: 'POST',
-      data,
+      data
     })
   },
+  /* start_detail */
   detail: (params: { id: string }) => {
     return request('/api/pt/bo/cash2Margin/assetTransfer/detail', {
       method: 'GET',
-      params,
+      params
     })
   },
+  /* end_detail */
+  /* start_edit */
   create: (data) => {
     return request('', {
       method: 'POST',
-      data,
+      data
     })
   },
   update: (data = {}) => {
     return request('', {
       method: 'POST',
-      data,
+      data
     })
   },
+  /* end_edit */
+  /* start_delete */
   delete: (data) => {
     return request('', {
       method: 'POST',
-      data,
+      data
     })
-  },
+  }
+  /* end_delete */
 }
