@@ -2,6 +2,7 @@
   "name": "omni-bo-extension",
   "displayName": "Omni BO Vscode插件",
   "description": "Omni BO 插件, 快速创建页面模版",
+  "publisher": "huangjin",
   "version": "0.0.1",
   "icon": "logo.png",
   "engines": {

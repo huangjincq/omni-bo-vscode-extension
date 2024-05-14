@@ -5,7 +5,7 @@ const path = require('path')
 const production = process.argv.includes('--production')
 const watch = process.argv.includes('--watch')
 
-const templateDir = path.join(__dirname, 'src/templates/**/*')
+const templateDir = path.join(__dirname, '/templates/**/*')
 const distDir = path.join(__dirname, 'dist/templates')
 
 /**
