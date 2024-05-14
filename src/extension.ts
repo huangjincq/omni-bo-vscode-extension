@@ -33,7 +33,10 @@ export function activate(context: vscode.ExtensionContext) {
       // 4. 修改index.tsx入口组件名
       const indexPath = path.join(targetPath, 'index.tsx')
       const indexContent = fs.readFileSync(indexPath, 'utf-8')
-      const newContent = indexContent.replace('export default function Tab1', `export default function ${folderName}`)
+      const newContent = indexContent.replace(
+        'export default function Template',
+        `export default function ${folderName}`
+      )
       fs.writeFileSync(indexPath, newContent)
 
       vscode.window.showInformationMessage('创建页面成功!')

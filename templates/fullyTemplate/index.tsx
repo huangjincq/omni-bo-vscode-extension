@@ -11,14 +11,14 @@ import { PlusOutlined } from '@ant-design/icons'
 import { SuccessMsg } from '@library/hooks/global'
 import { Modal, Space } from 'antd'
 
-export default function Tab1() {
+export default function Template() {
   const actionRef = useRef<ActionType>()
 
   const [{ selectedRow, showDetailModal, showEditModal, selectedRows }, setState] = useSetState({
     showDetailModal: false,
     showEditModal: false,
     selectedRow: null,
-    selectedRows: [],
+    selectedRows: []
   })
 
   const selectedRowKeys = useMemo(() => selectedRows.map((v) => v.id), [selectedRows])
@@ -27,7 +27,7 @@ export default function Tab1() {
     selectedRowKeys,
     onChange: (selectedRowKeys: string[], selectedRows) => {
       setState({ selectedRows })
-    },
+    }
     // getCheckboxProps: (record) => ({
     //   disabled: record.status === 1,
     // }),
@@ -52,7 +52,7 @@ export default function Tab1() {
         await api.delete({ ids: selectedRow ? [selectedRow.id] : selectedRowKeys })
         SuccessMsg()
         actionRef.current.reload()
-      },
+      }
     })
   }
 
@@ -60,14 +60,14 @@ export default function Tab1() {
     handleEditModal,
     handleDetailModal,
     handleDelete,
-    handleSubmit,
+    handleSubmit
   })
 
   const onClose = (refresh?: boolean) => {
     setState({
       showDetailModal: false,
       showEditModal: false,
-      selectedRow: null,
+      selectedRow: null
     })
     refresh && actionRef.current.reload()
   }
@@ -83,18 +83,18 @@ export default function Tab1() {
         onDataSourceChange={() => setState({ selectedRows: [] })}
         toolbar={{
           title: (
-            <Space align='end' size='middle'>
+            <Space align="end" size="middle">
               <OfficeButton
-                url='' // TODO set permission url
+                url="" // TODO set permission url
                 onClick={() => handleEditModal()}
-                type='primary'
+                type="primary"
                 icon={<PlusOutlined />}
               >
                 Add
               </OfficeButton>
               <OfficeButton
-                url='' // TODO set permission url
-                type='primary'
+                url="" // TODO set permission url
+                type="primary"
                 danger
                 disabled={!selectedRows.length}
                 onClick={handleDelete}
@@ -102,7 +102,7 @@ export default function Tab1() {
                 Batch Delete
               </OfficeButton>
             </Space>
-          ),
+          )
         }}
       />
       {showEditModal && <EditModal selectedRow={selectedRow} onClose={onClose} />}

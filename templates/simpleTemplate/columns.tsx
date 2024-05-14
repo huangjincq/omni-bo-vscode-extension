@@ -17,7 +17,7 @@ export const statusOptions = [
   { value: StatusEnum.Pending, label: 'Pending', status: 'Processing' },
 ]
 
-export function useColumns({ handleDetailModal, handleEditModal, handleDelete, handleSubmit }) {
+export function useColumns({ handleDetailModal, handleEditModal }) {
   const [accountInfo, setAccountInfo] = useState()
 
   const formColumns: OfficeProColumns[] = [
@@ -110,15 +110,8 @@ export function useColumns({ handleDetailModal, handleEditModal, handleDelete, h
             },
             {
               url: '', // TODO set permission url
-              name: 'Submit',
-              onClick: () => handleSubmit(row),
-              showConfirm: true,
-            },
-            {
-              url: '', // TODO set permission url
               name: 'Delete',
               danger: true,
-              onClick: () => handleDelete(row),
             },
           ]}
         />
