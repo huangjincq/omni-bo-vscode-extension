@@ -124,6 +124,7 @@ function extractComments(text: string, keepArray: string[]) {
   return text.replace(/^\s*[\r\n]/gm, '')
 }
 
+// 修改路由文件
 function modifyRouterJs(dir: string, pageName: string) {
   // 1. 查找路由文件
   const { routerPath, track: relativePath } = findRouterJs(dir) || {}
@@ -133,14 +134,14 @@ function modifyRouterJs(dir: string, pageName: string) {
     return
   }
 
+  // 2. 生成路由模版代码
   const content = generateRouteCode(pageName, relativePath!)
-
   const fileContent = fs.readFileSync(routerPath, 'utf8')
   const insertPos = getInsertPos(fileContent)
+  // 插入指定位置
   const newContent = fileContent.slice(0, insertPos) + content + ',\n' + fileContent.slice(insertPos)
+  // 重写路由文件
   fs.writeFileSync(routerPath, newContent, 'utf8')
-
-  // 2.
 
   // 读取并解析 router.js，找到合适的插入位置
   function getInsertPos(fileContent: string) {
