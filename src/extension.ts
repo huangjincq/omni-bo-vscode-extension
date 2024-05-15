@@ -3,6 +3,7 @@
 import * as vscode from 'vscode'
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import * as lodash from 'lodash'
 
 const getPath = (str: string) => path.resolve(__dirname, str)
 
@@ -21,8 +22,8 @@ export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('createTemplate.create', async (uri: vscode.Uri) => {
     try {
       // 1.输入组件名称
-      const folderName = await vscode.window.showInputBox({ prompt: '请输入页面组件名称' })
-      if (!folderName) {
+      const pageName = await vscode.window.showInputBox({ prompt: '请输入页面组件名称' })
+      if (!pageName) {
         return vscode.window.showErrorMessage('请输入页面名称')
       }
 
@@ -36,19 +37,17 @@ export function activate(context: vscode.ExtensionContext) {
 
       // 3.创建新的文件夹路径，并确保路径存在
       const templatePath = getPath(`./templates`)
-      const targetPath = uri.fsPath + '/' + folderName
+      const targetPath = uri.fsPath + '/' + pageName
       await updateFiles(templatePath, targetPath, features)
 
       // 4. 修改index.tsx入口组件名
       const indexPath = path.join(targetPath, 'index.tsx')
       const indexContent = fs.readFileSync(indexPath, 'utf-8')
-      const newContent = indexContent.replace(
-        'export default function Template',
-        `export default function ${folderName}`
-      )
+      const newContent = indexContent.replace('export default function Template', `export default function ${pageName}`)
       fs.writeFileSync(indexPath, newContent)
 
       // 5. 修改路由文件
+      modifyRouterJs(uri.fsPath, pageName)
 
       vscode.window.showInformationMessage('创建页面成功!')
     } catch (error) {
@@ -105,6 +104,7 @@ async function updateFiles(originalDir: string, outputDir: string, features: str
   }
 }
 
+// 匹配注释模块，进行文件注释
 function extractComments(text: string, keepArray: string[]) {
   allFeatures.forEach((pattern) => {
     if (!keepArray.includes(pattern)) {
@@ -122,4 +122,59 @@ function extractComments(text: string, keepArray: string[]) {
   })
 
   return text.replace(/^\s*[\r\n]/gm, '')
+}
+
+function modifyRouterJs(dir: string, pageName: string) {
+  // 1. 查找路由文件
+  const { routerPath, track: relativePath } = findRouterJs(dir) || {}
+
+  if (!routerPath) {
+    vscode.window.showWarningMessage('没有找到路由文件')
+    return
+  }
+
+  const content = generateRouteCode(pageName, relativePath!)
+
+  const fileContent = fs.readFileSync(routerPath, 'utf8')
+  const insertPos = getInsertPos(fileContent)
+  const newContent = fileContent.slice(0, insertPos) + content + ',\n' + fileContent.slice(insertPos)
+  fs.writeFileSync(routerPath, newContent, 'utf8')
+
+  // 2.
+
+  // 读取并解析 router.js，找到合适的插入位置
+  function getInsertPos(fileContent: string) {
+    // 可以使用不同的逻辑来确定插入的位置，这里简单认为最后一个']'前就是插入位置
+    return fileContent.lastIndexOf(']')
+  }
+
+  // 生成新的路由配置代码
+  function generateRouteCode(filename: string, relativePath: string) {
+    const name = filename.charAt(0).toUpperCase() + filename.slice(1) // 首字母大写
+    const route = `  {
+    name: '${lodash.startCase(name)}',
+    route: '/pt/${lodash.camelCase(filename)}',
+    component: Loadable(() => import('${relativePath}${filename}'))
+  }`
+    return route
+  }
+
+  function findRouterJs(dir: string, depth = 0, track = []) {
+    const files = fs.readdirSync(dir)
+    // 检查包含 'router.ts' 或 'router.tsx' 的文件
+    const routerFile = files.find((file) => file === 'router.ts' || file === 'router.tsx')
+
+    if (routerFile) {
+      return {
+        routerPath: path.join(dir, routerFile),
+        track: './' + (track?.length ? track.reverse().join('/') + '/' : '')
+      }
+    }
+    const parentDir = path.resolve(dir, '..')
+    if (parentDir !== dir && depth < 3) {
+      // @ts-ignore
+      track.push(path.basename(dir))
+      return findRouterJs(parentDir, depth + 1, track)
+    }
+  }
 }
